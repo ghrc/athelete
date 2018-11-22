@@ -90,7 +90,7 @@ export default {
     switchRoles: '切换权限'
   },
   guide: {
-    description: '引导页对于一些第一次进入项目的人很有用，你可以简单介绍下项目的功能。本 Demo 是基于',
+    description: '跟随引导可以简单了解下项目的功能喔',
     button: '打开引导'
   },
   components: {
