@@ -6,13 +6,22 @@
       <FilenameOption v-model="filename" />
       <AutoWidthOption v-model="autoWidth" />
       <BookTypeOption v-model="bookType" />
+      <el-button :loading="downloadLoading" style="margin-bottom:20px" type="primary" icon="document" @click="handleChooseload">{{ $t('excel.selectedExport') }}</el-button>
       <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="document" @click="handleDownload">{{ $t('excel.export') }} Excel</el-button>
       <a href="https://panjiachen.github.io/vue-element-admin-site/feature/component/excel.html" target="_blank" style="margin-left:15px;">
-        <el-tag type="info">Documentation</el-tag>
       </a>
     </div>
 
-    <el-table v-loading="listLoading" :data="list" element-loading-text="拼命加载中" border fit highlight-current-row>
+    <el-table
+      v-loading="listLoading"
+      ref="multipleTable"
+      :data="list"
+      element-loading-text="拼命加载中"
+      border
+      fit
+      highlight-current-row
+      @selection-change="handleSelectionChange">
+      <el-table-column type="selection" align="center"/>
       <el-table-column align="center" label="Id" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
@@ -62,6 +71,7 @@ export default {
       downloadLoading: false,
       filename: '',
       autoWidth: true,
+      multipleSelection: [],
       bookType: 'xlsx'
     }
   },
@@ -92,6 +102,39 @@ export default {
         })
         this.downloadLoading = false
       })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    handleChooseload() {
+      if (this.multipleSelection.length) {
+        this.downloadLoading = true
+        import('@/vendor/Export2Excel').then(excel => {
+          const tHeader = ['Id', 'Title', 'Author', 'Readings', 'Date']
+          const filterVal = ['id', 'title', 'author', 'pageviews', 'display_time']
+          const list = this.multipleSelection
+          const data = this.formatJson(filterVal, list)
+          // excel.export_json_to_excel({
+          //   header: tHeader,
+          //   data,
+          //   filename: this.filename
+          // })
+          excel.export_json_to_excel({
+            header: tHeader,
+            data,
+            filename: this.filename,
+            autoWidth: this.autoWidth,
+            bookType: this.bookType
+          })
+          this.$refs.multipleTable.clearSelection()
+          this.downloadLoading = false
+        })
+      } else {
+        this.$message({
+          message: 'Please select at least one item',
+          type: 'warning'
+        })
+      }
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map(v => filterVal.map(j => {

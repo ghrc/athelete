@@ -55,7 +55,6 @@ export default {
     errorLog: '错误日志',
     excel: 'Excel',
     exportExcel: 'Export Excel',
-    selectExcel: 'Export Selected',
     uploadExcel: 'Upload Excel',
     zip: 'Zip',
     exportZip: 'Export Zip',
